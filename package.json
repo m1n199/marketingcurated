@@ -10,15 +10,20 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@sidebase/nuxt-auth": "^0.9.4",
+    "@nuxtjs/tailwindcss": "^6.12.2",
     "@unocss/nuxt": "^0.63.6",
+    "lucide-vue-next": "^0.453.0",
+    "next-auth": "~4.21.1",
     "nuxt": "^3.13.2",
     "unocss": "^0.63.6",
+    "unocss-preset-scrollbar-hide": "^1.0.1",
     "vue": "latest",
     "vue-router": "latest"
   },
-  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b",
+  "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228",
   "devDependencies": {
-    "next-auth": "^4.21.1"
+    "@sidebase/nuxt-auth": "^0.9.4",
+    "fuse.js": "^7.0.0",
+    "mongoose": "^8.7.3"
   }
 }
