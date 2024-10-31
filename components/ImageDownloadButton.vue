@@ -1,8 +1,17 @@
 <script lang="tsx" setup>
 import { useAuthentication } from "#imports";
+import { Download } from "lucide-vue-next";
 import { ref } from "vue";
 
+interface Props {
+  url: string;
+}
+
+const props = defineProps<Props>();
+
 const { isAuthenticated } = useAuthentication();
+
+const downloaded = ref(false);
 
 const WaterMark = {
   text: "Curated by Placehold",
@@ -11,18 +20,11 @@ const WaterMark = {
   font: "Oswald",
   h: "100",
 };
+
 const generateWaterMark = (width: number) => {
   // return `https://placehold.co/${width}x100/000000/ff0000.png?text=Water+Mark&font=roboto`;
   return `https://placehold.co/${width}x${WaterMark.h}/${WaterMark.bg}/${WaterMark.color}.png?text=${WaterMark.text}&font=${WaterMark.font}`;
 };
-
-interface ImageCopyButtonProps {
-  url: string;
-}
-
-const props = defineProps<ImageCopyButtonProps>();
-
-const copied = ref(false);
 
 const handleClick = async () => {
   if (!isAuthenticated.value) {
@@ -68,17 +70,16 @@ const handleClick = async () => {
           // Convert canvas to blob
           canvas.toBlob(async (canvasBlob) => {
             if (canvasBlob) {
-              // Create a new ClipboardItem holding the image blob
-              const clipboardItem = new ClipboardItem({
-                "image/png": canvasBlob,
-              });
-
-              // Write the ClipboardItem to the clipboard
-              await navigator.clipboard.write([clipboardItem]);
-
-              copied.value = true;
+              // Create a download link
+              const url = window.URL.createObjectURL(canvasBlob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "image_with_watermark.png";
+              a.click();
+              window.URL.revokeObjectURL(url);
+              downloaded.value = true;
               setTimeout(() => {
-                copied.value = false;
+                downloaded.value = false;
               }, 2000);
             }
           }, "image/png");
@@ -86,7 +87,7 @@ const handleClick = async () => {
       };
     };
   } catch (error) {
-    console.error("Failed to copy image: ", error);
+    console.error("Failed to download image: ", error);
   }
 };
 </script>
@@ -95,13 +96,17 @@ const handleClick = async () => {
   <button
     :disabled="!isAuthenticated"
     :class="[
-      'z-20 absolute bottom-0 py-2 px-4 rounded-3xl tracking-wider left-[25%] translate-x-[-50%] mb-10',
-      copied ? 'bg-green-500 text-white' : (!isAuthenticated ? 'bg-gray-400 text-zinc-800' : 'bg-white text-black'),
+      'z-20 absolute bottom-0 py-2 px-4 rounded-3xl tracking-wider left-[75%] mb-10 flex justify-center items-center',
+      downloaded
+        ? 'bg-green-500 text-white'
+        : !isAuthenticated
+        ? 'bg-gray-400 text-zinc-800'
+        : 'bg-white text-black',
       !isAuthenticated ? 'cursor-not-allowed' : 'cursor-pointer',
     ]"
     @click="handleClick"
   >
-    <span>{{ copied ? "Copied!" : "Copy Image" }}</span>
+    <Download class="w-6 h-6 inline-block mr-2" />
   </button>
 </template>
 

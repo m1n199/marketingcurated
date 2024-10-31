@@ -10,7 +10,7 @@ const Overlay = (_: any, { slots }: any) => h('div', {
   class: [
     'absolute top-0 left-0',
     'h-screen w-screen',
-    'bg-black bg-op-80',
+    'navbar-model-overlay',
     'z-150',
     'p-1'
   ], onClick(e) {
@@ -21,7 +21,6 @@ const Overlay = (_: any, { slots }: any) => h('div', {
 const SearchModelWrap = (_: any, { slots }: any) => h('div', {
   class: [
     'max-w-4xl',
-    'bg-zinc-800',
     'mx-auto p-4',
     'rounded-3xl',
     'h-full max-h-lg',
@@ -34,7 +33,7 @@ const SearchBarWrap = (_: any, { slots }: any) => h('div', {
   class: [
     'h-full max-h-14 sm:max-h-16 w-full',
     'rounded-full',
-    'bg-gray-3 bg-op-20',
+    'navbar-model-search-wrap',
     'cursor-pointer',
     'overflow-hidden',
     'px-1 flex'
@@ -47,7 +46,6 @@ const SearchBarInputField = () => h(SearchChild, {
   class: 'flex-grow',
 }, h('input', {
   class: [
-    'text-white',
     'text-lg',
     'md:text-xl',
     'tracking-wide',
@@ -55,7 +53,6 @@ const SearchBarInputField = () => h(SearchChild, {
     'w-full h-full',
     'bg-transparent',
     'outline-none',
-    'placeholder-white',
   ],
   type: 'text',
   value: searchQuery.value,
@@ -75,23 +72,22 @@ const SearchBar = () => (
 const SearchSuggetionWrap = (_: any, { slots }: any) => h('div', { class: 'm-4 h-full overflow-auto' }, slots.default())
 const SearchSuggetion = (params: any) =>  h('div', {
   class: [
-    'h-12 md:h-14 w-full',
-    'hover:bg-gray-3 hover:bg-op-20',
-    // 'rounded-full',
-    // 'my-1',
+    'h-12 md:h-14 w-full mb-2',
+    'navbar-search-suggestions hover:hover_navbar-search-suggestions',
+    'rounded-full',
     'cursor-pointer',
     'flex items-center',
     'px-4',
-    'flex items-center px-4 text-white text-lg md:text-xl tracking-wide'
+    'flex items-center px-4 text-lg md:text-xl tracking-wide'
   ],
   onClick: () => {
     props.CloseModel(); 
     // setSearchQuery('') 
   },
 },
-  <nuxt-link to={{ params: { feature: params.feature }, query: { filter: params.filter } }} class="w-full">
+  <nuxt-link to={{ params: { feature: params.feature }, query: { filter: params.filter } }} class="w-full mx-5">
     {params.filter} <br />
-    <span class='text-sm translate-y-10 text-zinc-500'>{params.feature}</span>
+    <span class='text-sm -translate-y-2 text-op-50'>{params.feature}</span>
   </nuxt-link>
 )
 

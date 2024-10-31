@@ -27,7 +27,6 @@ async function isFuseAvilable() {
   if (fuse) return true;
   const data = await getTransformedData();
   if (!data.length) return false;
-  console.log("data:", JSON.stringify(data[0]));
   fuse = new Fuse(data, {
     // isCaseSensitive: false,
     // includeScore: true,
@@ -53,7 +52,6 @@ export default defineEventHandler(async (event) => {
     // console.log("not fetching suggestions for empty query");
   } else {
     suggestions = fuse.search(query);
-    console.log("suggestions:", JSON.stringify(suggestions));
   }
   // if (suggestions.length > 10) suggestions = suggestions.slice(0, 10);
   return { suggestions };

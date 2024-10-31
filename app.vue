@@ -3,15 +3,14 @@ import LoadingScreen from './components/LoadingScreen.vue';
 import Navbar from './components/Navbar/index.vue';
 </script>
 <template>
+  <NuxtRouteAnnouncer />
   <LoadingScreen />
   <Navbar />
   <NuxtPage />
 </template>
 <style>
 body {
-  background: #000;
-  color: #fff;
- 
+  color: #000;
 }
 /* Target Webkit browsers (e.g., Chrome, Safari) */
 ::-webkit-scrollbar {

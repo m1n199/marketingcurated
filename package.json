@@ -10,11 +10,14 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@dword-design/functions": "^6.0.1",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@unocss/nuxt": "^0.63.6",
     "lucide-vue-next": "^0.453.0",
     "next-auth": "~4.21.1",
     "nuxt": "^3.13.2",
+    "nuxt-mail": "^5.1.1",
+    "resend": "4.0.1-alpha.0",
     "unocss": "^0.63.6",
     "unocss-preset-scrollbar-hide": "^1.0.1",
     "vue": "latest",
@@ -24,6 +27,9 @@
   "devDependencies": {
     "@sidebase/nuxt-auth": "^0.9.4",
     "fuse.js": "^7.0.0",
-    "mongoose": "^8.7.3"
+    "mongoose": "^8.7.3",
+    "nodemailer": "^6.9.16",
+    "nuxt-nodemailer": "^1.1.2",
+    "vue-horizontal-scroll": "^0.2.4"
   }
 }

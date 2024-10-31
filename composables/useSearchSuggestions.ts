@@ -22,7 +22,6 @@ function fetchSuggestions() {
         "/api/search?q=" + searchQuery.value
       ).then((data) => {
         // console.log("suggestions:", data, data.suggestions);
-        console.log("suggestions:", data.suggestions);
         suggestions.value = data.suggestions;
       });
     }

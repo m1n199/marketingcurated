@@ -5,37 +5,41 @@ import {
   onMounted,
   onUnmounted,
   ref,
+  useAuthentication,
   useBrowse,
   useRoute,
   watch,
 } from "#imports";
+import HeroSection from "~/components/HeroSection.vue";
 import ImageCopyButton from "~/components/ImageCopyButton.vue";
+import ImageDownloadButton from "~/components/ImageDownloadButton.vue";
 import { useFeatureAndFilterList } from "~/composables/useFeatureAndFilterList";
+import { useHorizontalScrolling } from "~/composables/useHorizontalScrolling";
+const { isAuthenticated } = useAuthentication();
 const route = useRoute();
 const { fetchFeatureAndFilterList, features } = useFeatureAndFilterList();
 await fetchFeatureAndFilterList();
 const { isThereMore, browseItems, fetchInitBrowseItems, fetchMoreBrowseItems } =
-  useBrowse(features);
-
+  useBrowse();
+const isLandscape = computed(() => route.params.feature !== "Color");
 await fetchInitBrowseItems(
   route.params.feature as string,
   route.query.filter as string
 );
 
-const count = Array.from({ length: 2 }, (_, i) => i + 1);
+const count = Array.from({ length: 9 }, (_, i) => i + 1);
 const fetchMorePointerRef = ref<HTMLElement | null>(null);
-const activeFeatureFilters = computed(() => {
-  const activeFeature = features.value.find(
-    (feature) => feature.name === route.params.feature
-  );
-  return activeFeature?.filters || [];
-});
+const activeFeatureFilters = computed(
+  () =>
+    features.value.find((feature) => feature.name === route.params.feature)
+      ?.filters || []
+);
 
 watch(
   () => route.query.filter,
   (newFilter) => {
     fetchInitBrowseItems(route.params.feature as string, newFilter as string);
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
   }
 );
 
@@ -47,12 +51,11 @@ onMounted(() => {
         if (entry.isIntersecting) {
           if (debounceTimeout) clearTimeout(debounceTimeout);
           debounceTimeout = setTimeout(() => {
-            console.log("fetch more");
             fetchMoreBrowseItems(
               route.params.feature as string,
               route.query.filter as string
             );
-          }, 1000);
+          }, 10);
         }
       });
     },
@@ -80,10 +83,10 @@ const FeatureLabels = (params: any) =>
     "button",
     {
       class: [
-        "hover:text-white py-1 border-b-2",
+        "hover:hover_browse-feature-label py-1 border-b-2",
         params.active
-          ? "text-white  border-white"
-          : "text-zinc-400 border-transparent",
+          ? "active_browse-feature-label"
+          : "browse-feature-label border-transparent",
       ],
     },
     <nuxt-link
@@ -96,13 +99,14 @@ const FeatureLabels = (params: any) =>
       {params.name}
     </nuxt-link>
   );
-const FilterLabels = (params: any) =>
-  h(
+const handleWheel = useHorizontalScrolling();
+const FilterLabels = (params: any) => {
+  return h(
     "button",
     {
       class: [
-        "border-1 border-zinc-400 px-4 py-2 rounded-full font-bold",
-        params.active ? "bg-white text-black" : "text-white ",
+        "border-1 px-4 py-2 rounded-full font-bold",
+        params.active ? "active_browse-filter-label" : "browse-filter-label",
       ],
     },
     <nuxt-link
@@ -115,26 +119,69 @@ const FilterLabels = (params: any) =>
     >
       {params.name}
     </nuxt-link>
+  )
+}
+const ImageWrap = (params: any) => {
+  return h(
+    "div",
+    {
+      class: [
+        "bg-blur-shiny w-full rounded-3xl overflow-hidden border-1 border-white relative",
+        isLandscape.value ? "aspect-ratio-[1.78]" : "aspect-ratio-[0.56]",
+      ],
+    },
+    [
+      h("img", {
+        src: params.item.url, // Assuming params includes the `item`
+        class: "w-full h-full object-cover rounded-lg",
+      }),
+      h(
+        "div",
+        {
+          class:
+            "op-0 hover:op-100 w-full h-full bg-transparent hover:bg-zinc-300/70 absolute top-0 left-0",
+        },
+        [
+          <div
+            class="absolute top-0 left-0 w-full h-full z-10"
+          />,
+            <ImageCopyButton url={params.item.url} />,
+            <ImageDownloadButton url={params.item.url} />
+        ]
+      ),
+    ]
+  );
+};
+
+const ImageGrid = (_: any, { slots }: any) =>
+  h(
+    "div",
+    {
+      class: [
+        "grid grid-cols-1 gap-4",
+        isLandscape.value
+          ? "xl:grid-cols-2"
+          : "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+      ],
+    },
+    [
+      browseItems.value.map((item: any, i: number) => {
+        return h(ImageWrap, {
+          key: i,
+          item,
+        });
+      }),
+      isAuthenticated.value && isThereMore.value ? slots.default() : <></>,
+    ]
   );
 </script>
 <template>
-  <div class="mx-4 sm:mx-10 md:mx-20 mt-5">
+  <div class="mx-4 sm:mx-10 md:mx-20 mt-5 browse">
+    <HeroSection />
     <h1 class="text-4xl md:text-5xl font-bold">Browse</h1>
     <div
-      class="flex gap-4 my-4 text-zinc-400 text-lg md:text-xl w-full overflow-auto pb-2 scrollbar-hide whitespace-nowrap scroll-smooth"
-      @wheel="
-        (event) => {
-          const target = event.currentTarget as HTMLElement;
-          // Check if the event is vertical scrolling
-          if (event.deltaY !== 0) {
-            // Adjust the scrollLeft property by a factor (50 in this case)
-            target.scrollLeft += event.deltaY * 50;
-
-            // Prevent the default vertical scroll behavior
-            event.preventDefault();
-          }
-        }
-      "
+      class="flex gap-4 my-4 text-lg md:text-xl w-full overflow-auto pb-2 scrollbar-hide whitespace-nowrap scroll-smooth"
+      @wheel="handleWheel"
     >
       <FeatureLabels
         v-for="(feature, i) of features"
@@ -144,80 +191,67 @@ const FilterLabels = (params: any) =>
       />
     </div>
     <div
-      class="flex gap-4 my-4 text-zinc-400 text-lg md:text-xl w-full overflow-auto pb-2 scrollbar-hide whitespace-nowrap"
-      @wheel="
-        (event) => {
-          const target = event.currentTarget as HTMLElement;
-          // Check if the event is vertical scrolling
-          if (event.deltaY !== 0) {
-            // Adjust the scrollLeft property by a factor (50 in this case)
-            target.scrollLeft += event.deltaY * 50;
-
-            // Prevent the default vertical scroll behavior
-            event.preventDefault();
-          }
-        }
-      "
+      class="flex gap-4 my-4 text-lg md:text-xl w-full overflow-auto pb-2 scrollbar-hide whitespace-nowrap scroll-smooth"
+      @wheel="handleWheel"
     >
       <FilterLabels
         v-for="(filter, i) of activeFeatureFilters"
         :key="i"
         :name="filter.name"
-        :active="filter.name === $route.query.filter"
         :feature="$route.params.feature"
+        :active="filter.name === $route.query.filter"
       />
     </div>
-    <!-- <ActiveFeatureFilters /> -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      <div
-        v-for="(item, i) of browseItems"
-        :key="i"
-        class="bg-blur-shiny w-full aspect-ratio-[1.78] rounded-3xl overflow-hidden border-1 border-white relative"
-      >
-        <img :src="item.url" class="w-full h-full object-cover rounded-lg" />
-        <div
-          class="op-0 hover:op-100 w-full h-full bg-transparent hover:bg-zinc-900 hover:bg-op-50 absolute top-0 left-0"
-        >
-          <nuxt-link
-            class="absolute top-0 left-0 w-full h-full z-10 bg-transparent"
-            :to="item.url"
-          />
-          <ImageCopyButton :url="item.url" />
-        </div>
-      </div>
+    <ImageGrid>
       <div
         ref="fetchMorePointerRef"
-        v-if="isThereMore"
-        class="bg-blur-shiny w-full aspect-ratio-[1.78] rounded-3xl overflow-hidden border-1 border-white"
+        :class="[
+          'w-full rounded-3xl overflow-hidden border-1 relative bg-moving',
+          isLandscape ? 'aspect-ratio-[1.78]' : 'aspect-ratio-[0.56]',
+        ]"
       >
-        <!-- <img :src="item.url" class="w-full h-full object-cover rounded-lg" /> -->
-        <div class="w-full h-full flex justify-center items-center">
-          <div class="">
-            <div
-              class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-white mx-auto"
-            ></div>
-          </div>
+        <div class="w-full h-full flex justify-center items-center bg-blur">
         </div>
       </div>
       <div
-        v-if="isThereMore"
         v-for="i in count"
         :key="i"
-        class="bg-blur-shiny w-full aspect-ratio-[1.78] rounded-3xl overflow-hidden border-1 border-white"
+        :class="[
+          'bg-blur-shiny w-full rounded-3xl overflow-hidden border-1 relative bg-moving',
+          isLandscape ? 'aspect-ratio-[1.78]' : 'aspect-ratio-[0.56]',
+        ]"
       >
-        <!-- <img :src="item.url" class="w-full h-full object-cover rounded-lg" /> -->
-        <div class="w-full h-full flex justify-center items-center">
-          <div class="">
-            <div
-              class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-white mx-auto"
-            ></div>
-          </div>
+        <div class="w-full h-full flex justify-center items-center bg-blur">
         </div>
       </div>
-    </div>
+    </ImageGrid>
   </div>
+  <div class="h-50 w-full bg-zinc/50 mt-10"></div>
 </template>
-
+<style>
+.bg-blur {
+  backdrop-filter: blur(100px); /* Adjust the blur intensity */
+  background: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+  animation: colorBlur 5s infinite alternate; /* Apply the animation */
+}
+@keyframes colorBlur {
+  0% {
+    background: rgba(200, 200, 200, 0.1);
+  }
+  25% {
+    background: rgba(255, 0, 0, 0.1); /* Red */
+  }
+  50% {
+    background: rgba(0, 255, 0, 0.1); /* Green */
+  }
+  75% {
+    background: rgba(0, 0, 255, 0.1); /* Blue */
+  }
+  100% {
+    background: rgba(200, 200, 200, 0.1);
+  }
+}
+</style>
 <style scoped>
 .bg-blur-shiny {
   backdrop-filter: blur(10px); /* Adjust the blur intensity */

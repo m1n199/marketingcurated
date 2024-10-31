@@ -22,7 +22,7 @@ const SearchBarButton = (_: any, { slots }: any) => h('button', {
     'max-w-2xl',
     'h-12 md:h-14 w-full',
     'rounded-full',
-    'bg-gray-3 bg-op-20',
+    'navbar-search-btn',
     'cursor-pointer',
     'overflow-hidden',
     'px-1 flex'
@@ -33,11 +33,9 @@ const SearchBarChild = h('div', { class: 'h-full aspect-ratio-1 flex items-cente
 const SearchBarSearchIcon = () => h(SearchBarChild, { class: 'justify-center' }, h(SearchIcon, { class: 'size-5 md:size-6' }))
 const SearchBarSearchText = () => h(SearchBarChild, { class: 'justify-start' }, h('span', {
   class: [
-    'text-white',
     'text-lg',
     'md:text-xl',
     'tracking-wide',
-    'text-op-50'
   ]
 }, 'Search...'))
 </script>

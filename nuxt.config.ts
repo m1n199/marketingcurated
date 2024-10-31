@@ -1,24 +1,59 @@
+
+import { defineNuxtConfig } from "nuxt/config";
+
+function checkEnvVariables(requiredKeys: string[]) {
+  const missingKeys = requiredKeys.filter(key => !process.env[key]);
+
+  if (missingKeys.length > 0) {
+    throw new Error(`Missing required environment variables: ${missingKeys.join(', ')}`);
+  }
+}
+
+// List of required environment variables
+const requiredEnvKeys = [
+  'BASE_URL',
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET',
+  'AUTH_SECRET',
+  'NODEMAILER_SERVICE',
+  'NODEMAILER_HOST',
+  'NODEMAILER_PORT',
+  'NODEMAILER_USER',
+  'NODEMAILER_PASS',
+  'MONGODB_URI'
+];
+
+// Check if all required environment variables are available
+checkEnvVariables(requiredEnvKeys);
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
-
-import { presetAttributify, presetUno } from "unocss";
-
-// import { presetUno, presetAttributify } from 'unocss'
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: "2024-04-03",
   devtools: { enabled: !true },
-  imports: { autoImport: false },
   spaLoadingTemplate: false,
-  // ssr: false,
+  ssr: !true,
   modules: [
-    '@unocss/nuxt', 
-    '@sidebase/nuxt-auth'
+    "@unocss/nuxt", 
+    "@sidebase/nuxt-auth", 
+    'nuxt-nodemailer'
   ],
+
+  nodemailer: {
+    service: process.env.NODEMAILER_SERVICE,
+    host: process.env.NODEMAILER_HOST,
+    port: process.env.NODEMAILER_PORT,
+    secure: true,
+    auth: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
+    }
+  },
+
+  imports: {
+    autoImport: false,
+  },
   unocss: {
     preflight: true,
-    presets: [
-      presetUno(),
-      presetAttributify(),
-    ]
   },
   auth: {
     provider: {
@@ -27,26 +62,24 @@ export default defineNuxtConfig({
     globalAppMiddleware: {
       isEnabled: !true
     },
-    // baseURL: `http://localhost:${process.env.PORT || 3000}`
-    // baseURL: 'https://refactored-journey-49xr557wvww25j7r-3000.app.github.dev'
-    baseURL: process.env.BASE_URL
+    baseURL: process.env.BASE_URL,
   },
   routeRules: {
-    '/with-caching': {
+    "/with-caching": {
       swr: 86400000,
       auth: {
         disableServerSideAuth: true
       }
     },
-    // '/': {
-    //   redirect: '/browse/Color?filter=Red'
-    // }
+    "/": {
+      redirect: "/browse/Color?filter=Red",
+    },
   },
-  //  vite: {
+  // vite: {
   //   server: {
   //     hmr: {
-  //       protocol: 'ws'
+  //       protocol: 'wss'
   //     }
   //   }
   // }
-})
+});

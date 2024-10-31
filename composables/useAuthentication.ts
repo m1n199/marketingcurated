@@ -35,20 +35,20 @@ export const useAuthentication = () => {
   const SignIn = (provider: BuiltInProviderType) => {
     setLoadingMessage(`Redirecting to ${provider} login page...`);
     setLoading(true);
-    signIn(provider, { callbackUrl: window.location.href });
+    signIn(provider, { callbackUrl: "/" });
   };
   const LogOut = () => {
     setLoadingMessage("Logging out...");
     setLoading(true);
-    signOut({ callbackUrl: window.location.href });
+    signOut({ callbackUrl: "" });
   };
-  const LogIn = (username: string, password: string) => {
-    setLoadingMessage("Logging in...");
-    setLoading(true);
+  const LogIn = (email: string, password: string) => {
+    // setLoadingMessage("Logging in...");
+    // setLoading(true);
     signIn("credentials", {
-      username,
+      email,
       password,
-      callbackUrl: window.location.href,
+      callbackUrl: "/",
     });
   };
   return {

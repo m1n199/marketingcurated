@@ -270,5 +270,4 @@ const init = async (list: BrowseItem[]) => {
 
 export default async function generateBrowseDummyData() {
   await init(browseList);
-  console.log("Browse Dummy data uploaded to browse collection");
 }
