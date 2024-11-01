@@ -9,9 +9,14 @@ import Navbar from './components/Navbar/index.vue';
   <NuxtPage />
 </template>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 body {
-  color: #000;
+  background: #000;
+  color: #fff;
+ 
 }
+  
 /* Target Webkit browsers (e.g., Chrome, Safari) */
 ::-webkit-scrollbar {
     width: 4px;              /* Adjust the width for vertical scrollbars */
