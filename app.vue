@@ -12,10 +12,12 @@ import Navbar from './components/Navbar/index.vue';
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 body {
-  background: #000;
-  color: #fff;
- 
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.02em;
+  color: #444;
+  background-color: #eee;
 }
+
   
 /* Target Webkit browsers (e.g., Chrome, Safari) */
 ::-webkit-scrollbar {
