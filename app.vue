@@ -15,7 +15,7 @@ body {
   font-family: 'Inter', sans-serif;
   letter-spacing: 0.02em;
   color: #444;
-  background-color: #eee;
+  background-color: #fff;
 }
 
   
